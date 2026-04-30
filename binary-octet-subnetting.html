@@ -12,6 +12,7 @@
             --square-on: #10b981;
             --square-off: #cbd5e1;
             --accent: #f59e0b;
+            --danger: #ef4444;
         }
 
         body {
@@ -26,7 +27,7 @@
 
         .app-container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1100px;
             background: white;
             padding: 2.5rem;
             border-radius: 1.5rem;
@@ -40,62 +41,82 @@
         .ipv4-display {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.5rem;
+            gap: 1rem;
             justify-content: center;
             align-items: flex-start;
         }
 
         .octet-group {
             background: #f8fafc;
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-radius: 1rem;
             border: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-width: 220px;
         }
 
         .bits-row {
             display: flex;
-            gap: 6px;
+            gap: 4px;
         }
 
         .bit-col {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .bit-val {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             color: #94a3b8;
         }
 
         .bit-btn {
-            width: 32px;
-            height: 40px;
+            width: 28px;
+            height: 36px;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             background: var(--square-off);
             color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.15s;
         }
 
         .bit-btn.active {
             background: var(--primary);
-            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);
         }
 
         .decimal-out {
-            margin-top: 1rem;
-            font-size: 1.5rem;
+            margin: 1rem 0;
+            font-size: 1.75rem;
             font-weight: 800;
             color: var(--text);
         }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .utility-btn {
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .utility-btn:hover { background: #f1f5f9; }
+        .btn-fill:hover { color: var(--primary); border-color: var(--primary); }
+        .btn-clear:hover { color: var(--danger); border-color: var(--danger); }
 
         .footer-stats {
             margin-top: 3rem;
@@ -108,43 +129,47 @@
 
         .stat-card {
             text-align: center;
-            padding: 1rem;
+            padding: 1.5rem;
             background: #fffbeb;
-            border-radius: 0.75rem;
+            border-radius: 1rem;
             border: 1px solid #fde68a;
         }
 
-        .stat-label { font-size: 0.8rem; text-transform: uppercase; color: #92400e; font-weight: 700; }
-        .stat-value { font-size: 2.5rem; font-weight: 900; color: var(--accent); }
+        .stat-label { font-size: 0.8rem; text-transform: uppercase; color: #92400e; font-weight: 700; margin-bottom: 0.5rem;}
+        .stat-value { font-size: 2.2rem; font-weight: 900; color: var(--accent); font-family: monospace; }
         
-        .dot { align-self: flex-end; font-size: 2rem; font-weight: 900; color: #cbd5e1; padding-bottom: 1rem; }
+        .dot { align-self: center; font-size: 2rem; font-weight: 900; color: #cbd5e1; margin-top: -40px; }
+
+        @media (max-width: 600px) {
+            .footer-stats { grid-template-columns: 1fr; }
+            .dot { display: none; }
+        }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <header>
-        <h1>IPv4 & Subnet Mask Visualizer</h1>
-        <p>Toggle bits to see the decimal result and CIDR prefix calculation.</p>
+        <h1>IPv4 Subnet Toolkit</h1>
+        <p>Interactive Binary to Dotted Decimal & CIDR Converter</p>
     </header>
 
     <div class="ipv4-display" id="ipv4-root"></div>
 
     <div class="footer-stats">
         <div class="stat-card">
-            <div class="stat-label">Dotted Decimal</div>
-            <div class="stat-value" id="full-ip">0.0.0.0</div>
+            <div class="stat-label">Full Mask (Decimal)</div>
+            <div id="full-ip" class="stat-value">0.0.0.0</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">CIDR Prefix</div>
-            <div class="stat-value" id="cidr-val">/0</div>
+            <div class="stat-label">CIDR Notation</div>
+            <div id="cidr-val" class="stat-value">/0</div>
         </div>
     </div>
 </div>
 
 <script>
     const bitWeights = [128, 64, 32, 16, 8, 4, 2, 1];
-    // State: 4 octets, each with 8 bits
     let state = [
         [0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0],
@@ -157,11 +182,15 @@
         render();
     }
 
+    function setOctet(oIdx, val) {
+        state[oIdx] = Array(8).fill(val);
+        render();
+    }
+
     function calculateTotals() {
         const octetDecimals = state.map(octet => 
             octet.reduce((acc, bit, i) => acc + (bit * bitWeights[i]), 0)
         );
-
         const totalBitsOn = state.flat().reduce((acc, bit) => acc + bit, 0);
 
         document.getElementById('full-ip').textContent = octetDecimals.join('.');
@@ -182,7 +211,6 @@
             octet.forEach((bit, bIdx) => {
                 const col = document.createElement('div');
                 col.className = 'bit-col';
-                
                 const valLabel = document.createElement('div');
                 valLabel.className = 'bit-val';
                 valLabel.textContent = bitWeights[bIdx];
@@ -202,8 +230,22 @@
             const decVal = octet.reduce((acc, b, i) => acc + (b * bitWeights[i]), 0);
             decOut.textContent = decVal;
 
-            group.appendChild(bitsRow);
-            group.appendChild(decOut);
+            const controls = document.createElement('div');
+            controls.className = 'controls';
+            
+            const fillBtn = document.createElement('button');
+            fillBtn.className = 'utility-btn btn-fill';
+            fillBtn.textContent = 'SET 255';
+            fillBtn.onclick = () => setOctet(oIdx, 1);
+
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'utility-btn btn-clear';
+            clearBtn.textContent = 'CLEAR';
+            clearBtn.onclick = () => setOctet(oIdx, 0);
+
+            controls.append(fillBtn, clearBtn);
+
+            group.append(bitsRow, decOut, controls);
             root.appendChild(group);
 
             if (oIdx < 3) {
