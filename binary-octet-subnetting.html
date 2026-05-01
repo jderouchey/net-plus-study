@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPv4 Subnet Explorer</title>
+    <title>Subnet Mask Logic Trainer</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -11,39 +11,39 @@
             --text: #0f172a;
             --square-on: #10b981;
             --square-off: #cbd5e1;
-            --accent: #f59e0b;
-            --danger: #ef4444;
+            --accent: #7c3aed;
         }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
+            padding: 2rem;
             display: flex;
             justify-content: center;
-            padding: 2rem;
         }
 
         .app-container {
             width: 100%;
             max-width: 1100px;
             background: white;
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 1.5rem;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        header { text-align: center; margin-bottom: 2.5rem; }
-        h1 { margin: 0; color: var(--primary); font-size: 2rem; }
-        p { color: #64748b; margin-top: 0.5rem; }
+        header { text-align: center; margin-bottom: 2rem; }
+        h1 { color: var(--primary); margin-bottom: 0.5rem; }
+        p { color: #64748b; font-size: 0.9rem; }
 
         .ipv4-display {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 15px;
             justify-content: center;
-            align-items: flex-start;
+            margin-bottom: 2rem;
+            align-items: center;
         }
 
         .octet-group {
@@ -51,97 +51,62 @@
             padding: 1.2rem;
             border-radius: 1rem;
             border: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 220px;
+            text-align: center;
         }
 
-        .bits-row {
-            display: flex;
-            gap: 4px;
-        }
+        .bits-row { display: flex; gap: 4px; margin-bottom: 1rem; }
 
         .bit-col {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
 
-        .bit-val {
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: #94a3b8;
-        }
+        .bit-label { font-size: 0.65rem; font-weight: bold; color: #94a3b8; }
 
         .bit-btn {
-            width: 28px;
-            height: 36px;
+            width: 32px;
+            height: 40px;
             border: none;
             border-radius: 4px;
             background: var(--square-off);
             color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.15s;
-        }
-
-        .bit-btn.active {
-            background: var(--primary);
-        }
-
-        .decimal-out {
-            margin: 1rem 0;
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--text);
-        }
-
-        .controls {
-            display: flex;
-            gap: 8px;
-        }
-
-        .utility-btn {
-            padding: 4px 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            border: 1px solid #e2e8f0;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
             transition: 0.2s;
         }
 
-        .utility-btn:hover { background: #f1f5f9; }
-        .btn-fill:hover { color: var(--primary); border-color: var(--primary); }
-        .btn-clear:hover { color: var(--danger); border-color: var(--danger); }
+        .bit-btn.active { background: var(--square-on); }
+        .bit-btn:hover { opacity: 0.8; }
 
-        .footer-stats {
-            margin-top: 3rem;
+        .decimal-val { font-size: 1.75rem; font-weight: 800; color: var(--text); }
+
+        .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            border-top: 2px solid #f1f5f9;
             padding-top: 2rem;
-            border-top: 2px dashed #e2e8f0;
         }
 
         .stat-card {
-            text-align: center;
+            background: #fdf2f8;
             padding: 1.5rem;
-            background: #fffbeb;
             border-radius: 1rem;
-            border: 1px solid #fde68a;
+            text-align: center;
+            border: 1px solid #fce7f3;
         }
 
-        .stat-label { font-size: 0.8rem; text-transform: uppercase; color: #92400e; font-weight: 700; margin-bottom: 0.5rem;}
-        .stat-value { font-size: 2.2rem; font-weight: 900; color: var(--accent); font-family: monospace; }
-        
-        .dot { align-self: center; font-size: 2rem; font-weight: 900; color: #cbd5e1; margin-top: -40px; }
+        .stat-card.blue { background: #eff6ff; border-color: #dbeafe; }
+        .stat-card.purple { background: #f5f3ff; border-color: #ede9fe; }
 
-        @media (max-width: 600px) {
-            .footer-stats { grid-template-columns: 1fr; }
+        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #64748b; margin-bottom: 0.5rem; }
+        .value { font-size: 1.25rem; font-weight: 900; color: var(--text); font-family: monospace; }
+        
+        .dot { font-size: 2.5rem; font-weight: 900; color: #cbd5e1; height: 40px; line-height: 40px; }
+
+        @media (max-width: 768px) {
             .dot { display: none; }
         }
     </style>
@@ -150,113 +115,120 @@
 
 <div class="app-container">
     <header>
-        <h1>IPv4 Subnet Toolkit</h1>
-        <p>Interactive Binary to Dotted Decimal & CIDR Converter</p>
+        <h1>Subnet Mask Logic Trainer</h1>
+        <p>Click any bit to set the mask. The logic will auto-fill preceding bits to maintain a valid sequence.</p>
     </header>
 
-    <div class="ipv4-display" id="ipv4-root"></div>
+    <div class="ipv4-display" id="root"></div>
 
-    <div class="footer-stats">
-        <div class="stat-card">
-            <div class="stat-label">Full Mask (Decimal)</div>
-            <div id="full-ip" class="stat-value">0.0.0.0</div>
+    <div class="stats-grid">
+        <div class="stat-card blue">
+            <div class="label">Subnet Mask</div>
+            <div id="mask-val" class="value">0.0.0.0</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">CIDR Notation</div>
-            <div id="cidr-val" class="stat-value">/0</div>
+            <div class="label">CIDR Prefix</div>
+            <div id="cidr-val" class="value">/0</div>
+        </div>
+        <div class="stat-card purple">
+            <div class="label">Total Networks</div>
+            <div id="nets-val" class="value">1</div>
+        </div>
+        <div class="stat-card blue">
+            <div class="label">Usable Hosts</div>
+            <div id="hosts-val" class="value">0</div>
         </div>
     </div>
 </div>
 
 <script>
-    const bitWeights = [128, 64, 32, 16, 8, 4, 2, 1];
-    let state = [
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0]
-    ];
+    const weights = [128, 64, 32, 16, 8, 4, 2, 1];
+    let maskLength = 0; // Tracking total number of bits set to 1
 
-    function toggleBit(oIdx, bIdx) {
-        state[oIdx][bIdx] = state[oIdx][bIdx] === 0 ? 1 : 0;
+    function handleBitClick(clickedIndex) {
+        // Correcting the sequence logic:
+        // If they click a bit that is currently 0, set mask length to that position.
+        // If they click a bit that is already 1, they are likely trying to shorten the mask.
+        const targetIndex = clickedIndex + 1;
+        
+        if (maskLength === targetIndex) {
+            maskLength = clickedIndex; // Toggle off if clicking the last active bit
+        } else {
+            maskLength = targetIndex; // Set length to the clicked bit
+        }
+        
         render();
     }
 
-    function setOctet(oIdx, val) {
-        state[oIdx] = Array(8).fill(val);
-        render();
-    }
+    function calculate() {
+        const octets = [0, 0, 0, 0];
+        for (let i = 0; i < maskLength; i++) {
+            const octetIdx = Math.floor(i / 8);
+            const bitIdx = i % 8;
+            octets[octetIdx] += weights[bitIdx];
+        }
 
-    function calculateTotals() {
-        const octetDecimals = state.map(octet => 
-            octet.reduce((acc, bit, i) => acc + (bit * bitWeights[i]), 0)
-        );
-        const totalBitsOn = state.flat().reduce((acc, bit) => acc + bit, 0);
+        const hostBits = 32 - maskLength;
+        const totalAddresses = Math.pow(2, hostBits);
+        const usableHosts = maskLength >= 31 ? 0 : totalAddresses - 2;
+        const networks = Math.pow(2, maskLength);
 
-        document.getElementById('full-ip').textContent = octetDecimals.join('.');
-        document.getElementById('cidr-val').textContent = `/${totalBitsOn}`;
+        document.getElementById('mask-val').textContent = octets.join('.');
+        document.getElementById('cidr-val').textContent = `/${maskLength}`;
+        document.getElementById('hosts-val').textContent = usableHosts.toLocaleString();
+        document.getElementById('nets-val').textContent = networks.toLocaleString();
     }
 
     function render() {
-        const root = document.getElementById('ipv4-root');
-        root.innerHTML = '';
+        const container = document.getElementById('root');
+        container.innerHTML = '';
 
-        state.forEach((octet, oIdx) => {
+        for (let o = 0; o < 4; o++) {
             const group = document.createElement('div');
             group.className = 'octet-group';
+            
+            const row = document.createElement('div');
+            row.className = 'bits-row';
 
-            const bitsRow = document.createElement('div');
-            bitsRow.className = 'bits-row';
+            let octetSum = 0;
+            for (let b = 0; b < 8; b++) {
+                const globalIdx = (o * 8) + b;
+                const isActive = globalIdx < maskLength;
+                if (isActive) octetSum += weights[b];
 
-            octet.forEach((bit, bIdx) => {
                 const col = document.createElement('div');
                 col.className = 'bit-col';
-                const valLabel = document.createElement('div');
-                valLabel.className = 'bit-val';
-                valLabel.textContent = bitWeights[bIdx];
+
+                const label = document.createElement('div');
+                label.className = 'bit-label';
+                label.textContent = weights[b];
 
                 const btn = document.createElement('button');
-                btn.className = `bit-btn ${bit ? 'active' : ''}`;
-                btn.textContent = bit;
-                btn.onclick = () => toggleBit(oIdx, bIdx);
+                btn.className = `bit-btn ${isActive ? 'active' : ''}`;
+                btn.textContent = isActive ? '1' : '0';
+                btn.onclick = () => handleBitClick(globalIdx);
 
-                col.appendChild(valLabel);
+                col.appendChild(label);
                 col.appendChild(btn);
-                bitsRow.appendChild(col);
-            });
+                row.appendChild(col);
+            }
 
-            const decOut = document.createElement('div');
-            decOut.className = 'decimal-out';
-            const decVal = octet.reduce((acc, b, i) => acc + (b * bitWeights[i]), 0);
-            decOut.textContent = decVal;
+            const dec = document.createElement('div');
+            dec.className = 'decimal-val';
+            dec.textContent = octetSum;
 
-            const controls = document.createElement('div');
-            controls.className = 'controls';
-            
-            const fillBtn = document.createElement('button');
-            fillBtn.className = 'utility-btn btn-fill';
-            fillBtn.textContent = 'SET 255';
-            fillBtn.onclick = () => setOctet(oIdx, 1);
+            group.appendChild(row);
+            group.appendChild(dec);
+            container.appendChild(group);
 
-            const clearBtn = document.createElement('button');
-            clearBtn.className = 'utility-btn btn-clear';
-            clearBtn.textContent = 'CLEAR';
-            clearBtn.onclick = () => setOctet(oIdx, 0);
-
-            controls.append(fillBtn, clearBtn);
-
-            group.append(bitsRow, decOut, controls);
-            root.appendChild(group);
-
-            if (oIdx < 3) {
+            if (o < 3) {
                 const dot = document.createElement('div');
                 dot.className = 'dot';
                 dot.textContent = '.';
-                root.appendChild(dot);
+                container.appendChild(dot);
             }
-        });
-
-        calculateTotals();
+        }
+        calculate();
     }
 
     render();
