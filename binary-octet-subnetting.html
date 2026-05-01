@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subnet Mask Logic Trainer</title>
+    <title>Subnet Master & Network Calculator</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -12,6 +12,7 @@
             --square-on: #10b981;
             --square-off: #cbd5e1;
             --accent: #7c3aed;
+            --calc-bg: #1e293b;
         }
 
         body {
@@ -19,28 +20,32 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 2rem;
+            padding: 1rem;
             display: flex;
             justify-content: center;
         }
 
-        .app-container {
+        .main-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1400px;
+        }
+
+        /* --- Subnetting Tool Styles --- */
+        .app-container {
             background: white;
             padding: 2rem;
             border-radius: 1.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         header { text-align: center; margin-bottom: 2rem; }
-        h1 { color: var(--primary); margin-bottom: 0.5rem; }
-        p { color: #64748b; font-size: 0.9rem; }
-
         .ipv4-display {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
             margin-bottom: 2rem;
             align-items: center;
@@ -48,190 +53,250 @@
 
         .octet-group {
             background: #f8fafc;
-            padding: 1.2rem;
+            padding: 1rem;
             border-radius: 1rem;
             border: 1px solid #e2e8f0;
             text-align: center;
         }
 
-        .bits-row { display: flex; gap: 4px; margin-bottom: 1rem; }
-
-        .bit-col {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .bit-label { font-size: 0.65rem; font-weight: bold; color: #94a3b8; }
+        .bits-row { display: flex; gap: 4px; margin-bottom: 0.5rem; }
+        .bit-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .bit-label { font-size: 0.6rem; font-weight: bold; color: #94a3b8; }
 
         .bit-btn {
-            width: 32px;
-            height: 40px;
+            width: 30px;
+            height: 38px;
             border: none;
             border-radius: 4px;
             background: var(--square-off);
             color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
         }
 
         .bit-btn.active { background: var(--square-on); }
-        .bit-btn:hover { opacity: 0.8; }
-
-        .decimal-val { font-size: 1.75rem; font-weight: 800; color: var(--text); }
+        .decimal-val { font-size: 1.5rem; font-weight: 800; }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
             border-top: 2px solid #f1f5f9;
-            padding-top: 2rem;
+            padding-top: 1.5rem;
         }
 
         .stat-card {
-            background: #fdf2f8;
-            padding: 1.5rem;
+            background: #eff6ff;
+            padding: 1rem;
             border-radius: 1rem;
             text-align: center;
-            border: 1px solid #fce7f3;
         }
 
-        .stat-card.blue { background: #eff6ff; border-color: #dbeafe; }
-        .stat-card.purple { background: #f5f3ff; border-color: #ede9fe; }
+        .stat-card.purple { background: #f5f3ff; }
+        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: #64748b; }
+        .value { font-size: 1.5rem; font-weight: 900; font-family: monospace; }
+        .dot { font-size: 2rem; font-weight: 900; color: #cbd5e1; }
 
-        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #64748b; margin-bottom: 0.5rem; }
-        .value { font-size: 1.25rem; font-weight: 900; color: var(--text); font-family: monospace; }
-        
-        .dot { font-size: 2.5rem; font-weight: 900; color: #cbd5e1; height: 40px; line-height: 40px; }
+        /* --- Calculator Styles --- */
+        .calculator {
+            background: var(--calc-bg);
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            color: white;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
 
-        @media (max-width: 768px) {
-            .dot { display: none; }
+        .calc-display {
+            background: #0f172a;
+            padding: 1rem;
+            text-align: right;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            min-height: 50px;
+        }
+
+        #calc-history { font-size: 0.8rem; color: #94a3b8; height: 1.2rem; }
+        #calc-main { font-size: 1.8rem; font-weight: bold; overflow: hidden; }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            padding: 15px 5px;
+            border-radius: 8px;
+            border: none;
+            background: #334155;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .calc-btn:hover { background: #475569; }
+        .op-btn { background: #475569; color: #38bdf8; }
+        .eq-btn { background: var(--primary); grid-column: span 2; }
+        .clear-btn { background: #ef4444; }
+
+        @media (max-width: 1000px) {
+            .main-wrapper { grid-template-columns: 1fr; }
+            .calculator { position: static; }
         }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header>
-        <h1>Subnet Mask Logic Trainer</h1>
-        <p>Click any bit to set the mask. The logic will auto-fill preceding bits to maintain a valid sequence.</p>
-    </header>
+<div class="main-wrapper">
+    <!-- Subnet Section -->
+    <div class="app-container">
+        <header>
+            <h1>Subnet Logic Trainer</h1>
+        </header>
 
-    <div class="ipv4-display" id="root"></div>
+        <div class="ipv4-display" id="root"></div>
 
-    <div class="stats-grid">
-        <div class="stat-card blue">
-            <div class="label">Subnet Mask</div>
-            <div id="mask-val" class="value">0.0.0.0</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Mask</div>
+                <div id="mask-val" class="value">0.0.0.0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">CIDR</div>
+                <div id="cidr-val" class="value">/0</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="label">Total Networks</div>
+                <div id="nets-val" class="value">1</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="label">Usable Hosts</div>
+                <div id="hosts-val" class="value">0</div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div class="label">CIDR Prefix</div>
-            <div id="cidr-val" class="value">/0</div>
+    </div>
+
+    <!-- Calculator Section -->
+    <div class="calculator">
+        <div class="label" style="color: #94a3b8; margin-bottom: 10px;">Exponent Calculator</div>
+        <div class="calc-display">
+            <div id="calc-history"></div>
+            <div id="calc-main">0</div>
         </div>
-        <div class="stat-card purple">
-            <div class="label">Total Networks</div>
-            <div id="nets-val" class="value">1</div>
-        </div>
-        <div class="stat-card blue">
-            <div class="label">Usable Hosts</div>
-            <div id="hosts-val" class="value">0</div>
+        <div class="calc-grid">
+            <button class="calc-btn clear-btn" onclick="clearCalc()">C</button>
+            <button class="calc-btn op-btn" onclick="appendCalc('**')">xʸ</button>
+            <button class="calc-btn op-btn" onclick="appendCalc('/')">/</button>
+            <button class="calc-btn op-btn" onclick="deleteLast()">⌫</button>
+            
+            <button class="calc-btn" onclick="appendCalc('7')">7</button>
+            <button class="calc-btn" onclick="appendCalc('8')">8</button>
+            <button class="calc-btn" onclick="appendCalc('9')">9</button>
+            <button class="calc-btn op-btn" onclick="appendCalc('*')">×</button>
+            
+            <button class="calc-btn" onclick="appendCalc('4')">4</button>
+            <button class="calc-btn" onclick="appendCalc('5')">5</button>
+            <button class="calc-btn" onclick="appendCalc('6')">6</button>
+            <button class="calc-btn op-btn" onclick="appendCalc('-')">-</button>
+            
+            <button class="calc-btn" onclick="appendCalc('1')">1</button>
+            <button class="calc-btn" onclick="appendCalc('2')">2</button>
+            <button class="calc-btn" onclick="appendCalc('3')">3</button>
+            <button class="calc-btn op-btn" onclick="appendCalc('+')">+</button>
+            
+            <button class="calc-btn" onclick="appendCalc('0')">0</button>
+            <button class="calc-btn" onclick="appendCalc('.')">.</button>
+            <button class="calc-btn eq-btn" onclick="calculateResult()">=</button>
         </div>
     </div>
 </div>
 
 <script>
+    // --- SUBNET LOGIC ---
     const weights = [128, 64, 32, 16, 8, 4, 2, 1];
-    let maskLength = 0; // Tracking total number of bits set to 1
+    let maskLength = 0;
 
-    function handleBitClick(clickedIndex) {
-        // Correcting the sequence logic:
-        // If they click a bit that is currently 0, set mask length to that position.
-        // If they click a bit that is already 1, they are likely trying to shorten the mask.
-        const targetIndex = clickedIndex + 1;
-        
-        if (maskLength === targetIndex) {
-            maskLength = clickedIndex; // Toggle off if clicking the last active bit
-        } else {
-            maskLength = targetIndex; // Set length to the clicked bit
-        }
-        
-        render();
+    function handleBitClick(idx) {
+        maskLength = (maskLength === idx + 1) ? idx : idx + 1;
+        renderSubnet();
     }
 
-    function calculate() {
-        const octets = [0, 0, 0, 0];
-        for (let i = 0; i < maskLength; i++) {
-            const octetIdx = Math.floor(i / 8);
-            const bitIdx = i % 8;
-            octets[octetIdx] += weights[bitIdx];
-        }
-
-        const hostBits = 32 - maskLength;
-        const totalAddresses = Math.pow(2, hostBits);
-        const usableHosts = maskLength >= 31 ? 0 : totalAddresses - 2;
-        const networks = Math.pow(2, maskLength);
-
-        document.getElementById('mask-val').textContent = octets.join('.');
-        document.getElementById('cidr-val').textContent = `/${maskLength}`;
-        document.getElementById('hosts-val').textContent = usableHosts.toLocaleString();
-        document.getElementById('nets-val').textContent = networks.toLocaleString();
-    }
-
-    function render() {
+    function renderSubnet() {
         const container = document.getElementById('root');
         container.innerHTML = '';
+        const octets = [0,0,0,0];
 
         for (let o = 0; o < 4; o++) {
             const group = document.createElement('div');
             group.className = 'octet-group';
-            
             const row = document.createElement('div');
             row.className = 'bits-row';
 
-            let octetSum = 0;
             for (let b = 0; b < 8; b++) {
                 const globalIdx = (o * 8) + b;
-                const isActive = globalIdx < maskLength;
-                if (isActive) octetSum += weights[b];
+                const active = globalIdx < maskLength;
+                if (active) octets[o] += weights[b];
 
                 const col = document.createElement('div');
                 col.className = 'bit-col';
-
-                const label = document.createElement('div');
-                label.className = 'bit-label';
-                label.textContent = weights[b];
-
+                col.innerHTML = `<div class="bit-label">${weights[b]}</div>`;
                 const btn = document.createElement('button');
-                btn.className = `bit-btn ${isActive ? 'active' : ''}`;
-                btn.textContent = isActive ? '1' : '0';
+                btn.className = `bit-btn ${active ? 'active' : ''}`;
+                btn.textContent = active ? '1' : '0';
                 btn.onclick = () => handleBitClick(globalIdx);
-
-                col.appendChild(label);
                 col.appendChild(btn);
                 row.appendChild(col);
             }
-
-            const dec = document.createElement('div');
-            dec.className = 'decimal-val';
-            dec.textContent = octetSum;
-
             group.appendChild(row);
-            group.appendChild(dec);
+            group.innerHTML += `<div class="decimal-val">${octets[o]}</div>`;
             container.appendChild(group);
-
-            if (o < 3) {
-                const dot = document.createElement('div');
-                dot.className = 'dot';
-                dot.textContent = '.';
-                container.appendChild(dot);
-            }
+            if (o < 3) container.innerHTML += `<div class="dot">.</div>`;
         }
-        calculate();
+
+        const usable = maskLength >= 31 ? 0 : Math.pow(2, 32 - maskLength) - 2;
+        document.getElementById('mask-val').textContent = octets.join('.');
+        document.getElementById('cidr-val').textContent = `/${maskLength}`;
+        document.getElementById('nets-val').textContent = Math.pow(2, maskLength).toLocaleString();
+        document.getElementById('hosts-val').textContent = usable.toLocaleString();
     }
 
-    render();
+    // --- CALCULATOR LOGIC ---
+    let calcExpression = "";
+    const mainDisp = document.getElementById('calc-main');
+    const histDisp = document.getElementById('calc-history');
+
+    function appendCalc(val) {
+        calcExpression += val;
+        mainDisp.textContent = calcExpression.replace(/\*\*/g, '^');
+    }
+
+    function clearCalc() {
+        calcExpression = "";
+        mainDisp.textContent = "0";
+        histDisp.textContent = "";
+    }
+
+    function deleteLast() {
+        calcExpression = calcExpression.slice(0, -1);
+        mainDisp.textContent = calcExpression || "0";
+    }
+
+    function calculateResult() {
+        try {
+            const result = eval(calcExpression);
+            histDisp.textContent = calcExpression.replace(/\*\*/g, '^') + " =";
+            mainDisp.textContent = result;
+            calcExpression = result.toString();
+        } catch {
+            mainDisp.textContent = "Error";
+            calcExpression = "";
+        }
+    }
+
+    renderSubnet();
 </script>
 
 </body>
