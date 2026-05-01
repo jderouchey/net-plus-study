@@ -13,6 +13,7 @@
             --square-off: #cbd5e1;
             --accent: #7c3aed;
             --calc-bg: #1e293b;
+            --danger: #ef4444;
         }
 
         body {
@@ -20,84 +21,102 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 1rem;
+            padding: 1.5rem;
             display: flex;
             justify-content: center;
         }
 
         .main-wrapper {
             display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 20px;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
             width: 100%;
-            max-width: 1400px;
+            max-width: 1440px;
         }
 
-        /* --- Subnetting Tool Styles --- */
+        /* --- Subnetting Tool --- */
         .app-container {
             background: white;
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
         header { text-align: center; margin-bottom: 2rem; }
+        h1 { margin: 0; color: var(--primary); font-size: 1.75rem; }
+
         .ipv4-display {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
             justify-content: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             align-items: center;
         }
 
         .octet-group {
             background: #f8fafc;
-            padding: 1rem;
+            padding: 1.2rem;
             border-radius: 1rem;
             border: 1px solid #e2e8f0;
             text-align: center;
+            min-width: 240px;
         }
 
-        .bits-row { display: flex; gap: 4px; margin-bottom: 0.5rem; }
+        .bits-row { display: flex; gap: 4px; margin-bottom: 0.8rem; justify-content: center; }
         .bit-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .bit-label { font-size: 0.6rem; font-weight: bold; color: #94a3b8; }
+        .bit-label { font-size: 0.65rem; font-weight: bold; color: #94a3b8; }
 
         .bit-btn {
-            width: 30px;
-            height: 38px;
+            width: 32px;
+            height: 42px;
             border: none;
             border-radius: 4px;
             background: var(--square-off);
             color: white;
             font-weight: bold;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
         .bit-btn.active { background: var(--square-on); }
-        .decimal-val { font-size: 1.5rem; font-weight: 800; }
+        .decimal-val { font-size: 2rem; font-weight: 800; margin: 0.5rem 0; }
+
+        /* Shortcut Buttons */
+        .octet-controls {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .util-btn {
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .util-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-clear:hover { border-color: var(--danger); color: var(--danger); }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
             border-top: 2px solid #f1f5f9;
-            padding-top: 1.5rem;
+            padding-top: 2rem;
         }
 
-        .stat-card {
-            background: #eff6ff;
-            padding: 1rem;
-            border-radius: 1rem;
-            text-align: center;
-        }
-
+        .stat-card { background: #eff6ff; padding: 1.5rem; border-radius: 1rem; text-align: center; }
         .stat-card.purple { background: #f5f3ff; }
-        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: #64748b; }
-        .value { font-size: 1.5rem; font-weight: 900; font-family: monospace; }
-        .dot { font-size: 2rem; font-weight: 900; color: #cbd5e1; }
+        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #64748b; margin-bottom: 5px;}
+        .value { font-size: 1.8rem; font-weight: 900; font-family: monospace; }
+        .dot { font-size: 2.5rem; font-weight: 900; color: #cbd5e1; }
 
-        /* --- Calculator Styles --- */
+        /* --- Calculator --- */
         .calculator {
             background: var(--calc-bg);
             padding: 1.5rem;
@@ -105,53 +124,51 @@
             color: white;
             height: fit-content;
             position: sticky;
-            top: 20px;
+            top: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
         }
 
         .calc-display {
             background: #0f172a;
             padding: 1rem;
             text-align: right;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             margin-bottom: 1rem;
-            min-height: 50px;
+            min-height: 60px;
+            border: 1px solid #334155;
         }
 
-        #calc-history { font-size: 0.8rem; color: #94a3b8; height: 1.2rem; }
-        #calc-main { font-size: 1.8rem; font-weight: bold; overflow: hidden; }
+        #calc-history { font-size: 0.85rem; color: #94a3b8; height: 1.4rem; }
+        #calc-main { font-size: 2rem; font-weight: bold; }
 
-        .calc-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .calc-btn {
-            padding: 15px 5px;
-            border-radius: 8px;
+            padding: 16px 5px;
+            border-radius: 10px;
             border: none;
             background: #334155;
             color: white;
             font-weight: bold;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            transition: background 0.2s;
         }
-
         .calc-btn:hover { background: #475569; }
         .op-btn { background: #475569; color: #38bdf8; }
         .eq-btn { background: var(--primary); grid-column: span 2; }
-        .clear-btn { background: #ef4444; }
+        .clear-btn { background: var(--danger); }
 
-        @media (max-width: 1000px) {
+        @media (max-width: 1100px) {
             .main-wrapper { grid-template-columns: 1fr; }
             .calculator { position: static; }
+            .dot { display: none; }
         }
     </style>
 </head>
 <body>
 
 <div class="main-wrapper">
-    <!-- Subnet Section -->
+    <!-- Subnet Master -->
     <div class="app-container">
         <header>
             <h1>Subnet Logic Trainer</h1>
@@ -161,11 +178,11 @@
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="label">Mask</div>
+                <div class="label">Subnet Mask</div>
                 <div id="mask-val" class="value">0.0.0.0</div>
             </div>
             <div class="stat-card">
-                <div class="label">CIDR</div>
+                <div class="label">CIDR Notation</div>
                 <div id="cidr-val" class="value">/0</div>
             </div>
             <div class="stat-card purple">
@@ -179,7 +196,7 @@
         </div>
     </div>
 
-    <!-- Calculator Section -->
+    <!-- Calculator -->
     <div class="calculator">
         <div class="label" style="color: #94a3b8; margin-bottom: 10px;">Exponent Calculator</div>
         <div class="calc-display">
@@ -224,6 +241,11 @@
         renderSubnet();
     }
 
+    function setOctet(oIdx, fill) {
+        maskLength = fill ? (oIdx + 1) * 8 : oIdx * 8;
+        renderSubnet();
+    }
+
     function renderSubnet() {
         const container = document.getElementById('root');
         container.innerHTML = '';
@@ -232,6 +254,7 @@
         for (let o = 0; o < 4; o++) {
             const group = document.createElement('div');
             group.className = 'octet-group';
+            
             const row = document.createElement('div');
             row.className = 'bits-row';
 
@@ -252,6 +275,24 @@
             }
             group.appendChild(row);
             group.innerHTML += `<div class="decimal-val">${octets[o]}</div>`;
+
+            // Shortcut Controls
+            const ctrl = document.createElement('div');
+            ctrl.className = 'octet-controls';
+            
+            const fillBtn = document.createElement('button');
+            fillBtn.className = 'util-btn';
+            fillBtn.textContent = 'SET 255';
+            fillBtn.onclick = () => setOctet(o, true);
+
+            const clearBtn = document.createElement('button');
+            clearBtn.className = 'util-btn btn-clear';
+            clearBtn.textContent = 'CLEAR';
+            clearBtn.onclick = () => setOctet(o, false);
+
+            ctrl.append(fillBtn, clearBtn);
+            group.appendChild(ctrl);
+
             container.appendChild(group);
             if (o < 3) container.innerHTML += `<div class="dot">.</div>`;
         }
