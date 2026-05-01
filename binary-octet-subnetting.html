@@ -34,7 +34,6 @@
             max-width: 1440px;
         }
 
-        /* --- Subnetting Tool --- */
         .app-container {
             background: white;
             padding: 2.5rem;
@@ -76,28 +75,20 @@
             color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
         .bit-btn.active { background: var(--square-on); }
         .decimal-val { font-size: 2rem; font-weight: 800; margin: 0.5rem 0; }
 
-        /* Shortcut Buttons */
-        .octet-controls {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-
+        .octet-controls { display: flex; gap: 8px; justify-content: center; }
         .util-btn {
-            padding: 4px 10px;
-            font-size: 0.7rem;
+            padding: 6px 12px;
+            font-size: 0.75rem;
             font-weight: 700;
             border: 1px solid #e2e8f0;
             background: white;
             border-radius: 6px;
             cursor: pointer;
-            transition: 0.2s;
         }
         .util-btn:hover { border-color: var(--primary); color: var(--primary); }
         .btn-clear:hover { border-color: var(--danger); color: var(--danger); }
@@ -114,9 +105,9 @@
         .stat-card.purple { background: #f5f3ff; }
         .label { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #64748b; margin-bottom: 5px;}
         .value { font-size: 1.2rem; font-weight: 900; font-family: monospace; }
-        .dot { font-size: 2.5rem; font-weight: 900; color: #cbd5e1; }
+        .dot { font-size: 2.5rem; font-weight: 900; color: #cbd5e1; margin-top: -20px;}
 
-        /* --- Calculator --- */
+        /* Calculator */
         .calculator {
             background: var(--calc-bg);
             padding: 1.5rem;
@@ -125,7 +116,6 @@
             height: fit-content;
             position: sticky;
             top: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
         }
 
         .calc-display {
@@ -135,11 +125,10 @@
             border-radius: 0.75rem;
             margin-bottom: 1rem;
             min-height: 60px;
-            border: 1px solid #334155;
         }
 
-        #calc-history { font-size: 0.85rem; color: #94a3b8; height: 1.4rem; }
-        #calc-main { font-size: 2rem; font-weight: bold; }
+        #calc-history { font-size: 0.85rem; color: #94a3b8; min-height: 1.4rem; }
+        #calc-main { font-size: 2rem; font-weight: bold; overflow-x: hidden; }
 
         .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .calc-btn {
@@ -151,7 +140,6 @@
             font-weight: bold;
             cursor: pointer;
             font-size: 1.1rem;
-            transition: background 0.2s;
         }
         .calc-btn:hover { background: #475569; }
         .op-btn { background: #475569; color: #38bdf8; }
@@ -168,35 +156,17 @@
 <body>
 
 <div class="main-wrapper">
-    <!-- Subnet Master -->
     <div class="app-container">
-        <header>
-            <h1>Subnet Logic Trainer</h1>
-        </header>
-
-        <div class="ipv4-display" id="root"></div>
-
+        <header><h1>Subnet Logic Trainer</h1></header>
+        <div class="ipv4-display" id="subnet-root"></div>
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="label">Subnet Mask</div>
-                <div id="mask-val" class="value">0.0.0.0</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">CIDR Notation</div>
-                <div id="cidr-val" class="value">/0</div>
-            </div>
-            <div class="stat-card purple">
-                <div class="label">Total Networks</div>
-                <div id="nets-val" class="value">1</div>
-            </div>
-            <div class="stat-card purple">
-                <div class="label">Usable Hosts</div>
-                <div id="hosts-val" class="value">0</div>
-            </div>
+            <div class="stat-card"><div class="label">Subnet Mask</div><div id="mask-val" class="value">0.0.0.0</div></div>
+            <div class="stat-card"><div class="label">CIDR Notation</div><div id="cidr-val" class="value">/0</div></div>
+            <div class="stat-card purple"><div class="label">Total Networks</div><div id="nets-val" class="value">1</div></div>
+            <div class="stat-card purple"><div class="label">Usable Hosts</div><div id="hosts-val" class="value">0</div></div>
         </div>
     </div>
 
-    <!-- Calculator -->
     <div class="calculator">
         <div class="label" style="color: #94a3b8; margin-bottom: 10px;">Exponent Calculator</div>
         <div class="calc-display">
@@ -204,141 +174,111 @@
             <div id="calc-main">0</div>
         </div>
         <div class="calc-grid">
-            <button class="calc-btn clear-btn" onclick="clearCalc()">C</button>
-            <button class="calc-btn op-btn" onclick="appendCalc('**')">xʸ</button>
-            <button class="calc-btn op-btn" onclick="appendCalc('/')">/</button>
-            <button class="calc-btn op-btn" onclick="deleteLast()">⌫</button>
-            
-            <button class="calc-btn" onclick="appendCalc('7')">7</button>
-            <button class="calc-btn" onclick="appendCalc('8')">8</button>
-            <button class="calc-btn" onclick="appendCalc('9')">9</button>
-            <button class="calc-btn op-btn" onclick="appendCalc('*')">×</button>
-            
-            <button class="calc-btn" onclick="appendCalc('4')">4</button>
-            <button class="calc-btn" onclick="appendCalc('5')">5</button>
-            <button class="calc-btn" onclick="appendCalc('6')">6</button>
-            <button class="calc-btn op-btn" onclick="appendCalc('-')">-</button>
-            
-            <button class="calc-btn" onclick="appendCalc('1')">1</button>
-            <button class="calc-btn" onclick="appendCalc('2')">2</button>
-            <button class="calc-btn" onclick="appendCalc('3')">3</button>
-            <button class="calc-btn op-btn" onclick="appendCalc('+')">+</button>
-            
-            <button class="calc-btn" onclick="appendCalc('0')">0</button>
-            <button class="calc-btn" onclick="appendCalc('.')">.</button>
-            <button class="calc-btn eq-btn" onclick="calculateResult()">=</button>
+            <button class="calc-btn clear-btn" id="btn-c">C</button>
+            <button class="calc-btn op-btn" data-val="**">xʸ</button>
+            <button class="calc-btn op-btn" data-val="/">/</button>
+            <button class="calc-btn op-btn" id="btn-del">⌫</button>
+            <button class="calc-btn" data-val="7">7</button>
+            <button class="calc-btn" data-val="8">8</button>
+            <button class="calc-btn" data-val="9">9</button>
+            <button class="calc-btn op-btn" data-val="*">×</button>
+            <button class="calc-btn" data-val="4">4</button>
+            <button class="calc-btn" data-val="5">5</button>
+            <button class="calc-btn" data-val="6">6</button>
+            <button class="calc-btn op-btn" data-val="-">-</button>
+            <button class="calc-btn" data-val="1">1</button>
+            <button class="calc-btn" data-val="2">2</button>
+            <button class="calc-btn" data-val="3">3</button>
+            <button class="calc-btn op-btn" data-val="+">+</button>
+            <button class="calc-btn" data-val="0">0</button>
+            <button class="calc-btn" data-val=".">.</button>
+            <button class="calc-btn eq-btn" id="btn-eq">=</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- SUBNET LOGIC ---
-    const weights = [128, 64, 32, 16, 8, 4, 2, 1];
-    let maskLength = 0;
+    (function() {
+        // --- SUBNET ENGINE ---
+        const weights = [128, 64, 32, 16, 8, 4, 2, 1];
+        let maskLength = 0;
 
-    function handleBitClick(idx) {
-        maskLength = (maskLength === idx + 1) ? idx : idx + 1;
-        renderSubnet();
-    }
+        function updateSubnet() {
+            const root = document.getElementById('subnet-root');
+            root.innerHTML = '';
+            const octets = [0,0,0,0];
 
-    function setOctet(oIdx, fill) {
-        maskLength = fill ? (oIdx + 1) * 8 : oIdx * 8;
-        renderSubnet();
-    }
+            for (let o = 0; o < 4; o++) {
+                const group = document.createElement('div');
+                group.className = 'octet-group';
+                const row = document.createElement('div');
+                row.className = 'bits-row';
 
-    function renderSubnet() {
-        const container = document.getElementById('root');
-        container.innerHTML = '';
-        const octets = [0,0,0,0];
+                for (let b = 0; b < 8; b++) {
+                    const idx = (o * 8) + b;
+                    const active = idx < maskLength;
+                    if (active) octets[o] += weights[b];
 
-        for (let o = 0; o < 4; o++) {
-            const group = document.createElement('div');
-            group.className = 'octet-group';
-            
-            const row = document.createElement('div');
-            row.className = 'bits-row';
+                    const col = document.createElement('div');
+                    col.className = 'bit-col';
+                    col.innerHTML = `<div class="bit-label">${weights[b]}</div>`;
+                    const btn = document.createElement('button');
+                    btn.className = `bit-btn ${active ? 'active' : ''}`;
+                    btn.textContent = active ? '1' : '0';
+                    btn.onclick = () => { maskLength = (maskLength === idx + 1) ? idx : idx + 1; updateSubnet(); };
+                    col.appendChild(btn);
+                    row.appendChild(col);
+                }
+                group.appendChild(row);
+                const decDisplay = document.createElement('div');
+                decDisplay.className = 'decimal-val';
+                decDisplay.textContent = octets[o];
+                group.appendChild(decDisplay);
 
-            for (let b = 0; b < 8; b++) {
-                const globalIdx = (o * 8) + b;
-                const active = globalIdx < maskLength;
-                if (active) octets[o] += weights[b];
-
-                const col = document.createElement('div');
-                col.className = 'bit-col';
-                col.innerHTML = `<div class="bit-label">${weights[b]}</div>`;
-                const btn = document.createElement('button');
-                btn.className = `bit-btn ${active ? 'active' : ''}`;
-                btn.textContent = active ? '1' : '0';
-                btn.onclick = () => handleBitClick(globalIdx);
-                col.appendChild(btn);
-                row.appendChild(col);
+                const ctrl = document.createElement('div');
+                ctrl.className = 'octet-controls';
+                const fBtn = document.createElement('button');
+                fBtn.className = 'util-btn'; fBtn.textContent = 'SET 255';
+                fBtn.onclick = () => { maskLength = (o + 1) * 8; updateSubnet(); };
+                const cBtn = document.createElement('button');
+                cBtn.className = 'util-btn btn-clear'; cBtn.textContent = 'CLEAR';
+                cBtn.onclick = () => { maskLength = o * 8; updateSubnet(); };
+                
+                ctrl.append(fBtn, cBtn);
+                group.appendChild(ctrl);
+                root.appendChild(group);
+                if (o < 3) { const d = document.createElement('div'); d.className = 'dot'; d.textContent = '.'; root.appendChild(d); }
             }
-            group.appendChild(row);
-            group.innerHTML += `<div class="decimal-val">${octets[o]}</div>`;
 
-            // Shortcut Controls
-            const ctrl = document.createElement('div');
-            ctrl.className = 'octet-controls';
-            
-            const fillBtn = document.createElement('button');
-            fillBtn.className = 'util-btn';
-            fillBtn.textContent = 'SET 255';
-            fillBtn.onclick = () => setOctet(o, true);
-
-            const clearBtn = document.createElement('button');
-            clearBtn.className = 'util-btn btn-clear';
-            clearBtn.textContent = 'CLEAR';
-            clearBtn.onclick = () => setOctet(o, false);
-
-            ctrl.append(fillBtn, clearBtn);
-            group.appendChild(ctrl);
-
-            container.appendChild(group);
-            if (o < 3) container.innerHTML += `<div class="dot">.</div>`;
+            const usable = maskLength >= 31 ? 0 : Math.pow(2, 32 - maskLength) - 2;
+            document.getElementById('mask-val').textContent = octets.join('.');
+            document.getElementById('cidr-val').textContent = `/${maskLength}`;
+            document.getElementById('nets-val').textContent = Math.pow(2, maskLength).toLocaleString();
+            document.getElementById('hosts-val').textContent = usable.toLocaleString();
         }
 
-        const usable = maskLength >= 31 ? 0 : Math.pow(2, 32 - maskLength) - 2;
-        document.getElementById('mask-val').textContent = octets.join('.');
-        document.getElementById('cidr-val').textContent = `/${maskLength}`;
-        document.getElementById('nets-val').textContent = Math.pow(2, maskLength).toLocaleString();
-        document.getElementById('hosts-val').textContent = usable.toLocaleString();
-    }
+        // --- CALCULATOR ENGINE ---
+        let expression = "";
+        const main = document.getElementById('calc-main');
+        const hist = document.getElementById('calc-history');
 
-    // --- CALCULATOR LOGIC ---
-    let calcExpression = "";
-    const mainDisp = document.getElementById('calc-main');
-    const histDisp = document.getElementById('calc-history');
+        document.querySelectorAll('.calc-btn[data-val]').forEach(b => {
+            b.onclick = () => { expression += b.getAttribute('data-val'); main.textContent = expression.replace(/\*\*/g, '^'); };
+        });
 
-    function appendCalc(val) {
-        calcExpression += val;
-        mainDisp.textContent = calcExpression.replace(/\*\*/g, '^');
-    }
+        document.getElementById('btn-c').onclick = () => { expression = ""; main.textContent = "0"; hist.textContent = ""; };
+        document.getElementById('btn-del').onclick = () => { expression = expression.slice(0, -1); main.textContent = expression || "0"; };
+        document.getElementById('btn-eq').onclick = () => {
+            try {
+                const res = eval(expression);
+                hist.textContent = expression.replace(/\*\*/g, '^') + " =";
+                main.textContent = res;
+                expression = res.toString();
+            } catch { main.textContent = "Error"; expression = ""; }
+        };
 
-    function clearCalc() {
-        calcExpression = "";
-        mainDisp.textContent = "0";
-        histDisp.textContent = "";
-    }
-
-    function deleteLast() {
-        calcExpression = calcExpression.slice(0, -1);
-        mainDisp.textContent = calcExpression || "0";
-    }
-
-    function calculateResult() {
-        try {
-            const result = eval(calcExpression);
-            histDisp.textContent = calcExpression.replace(/\*\*/g, '^') + " =";
-            mainDisp.textContent = result;
-            calcExpression = result.toString();
-        } catch {
-            mainDisp.textContent = "Error";
-            calcExpression = "";
-        }
-    }
-
-    renderSubnet();
+        updateSubnet();
+    })();
 </script>
-
 </body>
 </html>
